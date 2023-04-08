@@ -184,7 +184,7 @@ void ShowFile(string path)
 void CreateNewList(student* S, string path)
 {
 	bool F;
-	do 
+	do
 	{
 		cout << "ФИО: ";
 		string Name1, Name2, Name3, FullName;
@@ -293,7 +293,7 @@ void ChangeList(student *Student, string path)
 	bool yes, yes1;
 	do
 	{
-		cout << "Введите номер студента (0-" << size-1 << "): ";
+		cout << "Введите номер студента (0-" << size - 1 << "): ";
 		cin >> number;
 
 		do
@@ -432,7 +432,8 @@ void WriteBestStudents(student* S, string path)
 		}
 	}
 
-	for (int i = 0; i < size/6; i++)
+	cout << "Студенты с наилучшей успеваемостью: \n\n";
+	for (int i = 0; i < size / 6; i++)
 	{
 		cout << (S + arr_numb[i])->FullName << "\n" << (S + arr_numb[i])->sex << "\n" << (S + arr_numb[i])->group << "\n" << (S + arr_numb[i])->num << "\n";
 		for (int j = 0; j < 8; j++)
@@ -447,7 +448,7 @@ void WriteBestStudents(student* S, string path)
 	}
 }
 
-void WriteMaleFemale(student* S, string path) 
+void WriteMaleFemale(student* S, string path)
 {
 	CopyInStruct(S, path);
 	int size = CountStudents(path);
