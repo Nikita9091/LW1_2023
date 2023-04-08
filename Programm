@@ -1,0 +1,590 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+//const int SIZE = 50;
+
+struct student
+{
+	string FullName;
+	char sex;
+	int group;
+	int num;
+	int grades[8];
+};
+
+void CreateNewList(student*, string);
+void ShowFile(string);
+void CopyInStruct(student*, string);
+void ChangeList(student*, string);
+void DeleteAll(string);
+void WriteGroup(student*, int, string);
+void WriteBestStudents(student*, string);
+void WriteMaleFemale(student*, string);
+void WriteGrades(student*, string);
+void WriteStudentsNum(student*, string);
+int CountStudents(string);
+
+//const int SIZE = 50;
+
+
+int main()
+{
+	setlocale(0, "");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+
+	const int SIZE = 50;
+
+	string path = "C:/Users/fomen/OneDrive/Рабочий стол/Программирование/myFile.txt";
+	struct student Student[SIZE];
+	struct student S;
+
+	int size = CountStudents(path);
+
+	cout << "1. Создание новой записи о студенте\n2. Внесение изменений в уже имеющуюся запись\n3. Вывод всех данных о студентах\n"
+		<< "4. Вывод информации обо всех студентах заданной группы\n5. Топ " << size / 6 << " студентов с наивысшим по рейтингу средним баллом\n"
+		<< "6. Вывод количества студентов мужского и женского пола\n7. Вывод данных о студентах, которые не получают стипендию; учатся только на 'хор' и 'отл'; только на 'отл'\n"
+		<< "8. Вывод данных о студентах, имеющих заданный номер в списке\n";
+
+	int command = 1;
+	while (command)
+	{
+		cout << "\n\nВведите номер команды: ";
+		cin >> command;
+		switch (command)
+		{
+		case 0:
+			break;
+		case 1:
+		{
+			if (size >= SIZE)
+				cout << "Файл полностью заполнен!" << endl;
+			else
+			{
+				cout << endl;
+				CreateNewList(&S, path);
+				CopyInStruct(Student, path);
+			}
+			break;
+		}
+		case 2:
+		{
+			cout << endl;
+			CopyInStruct(Student, path);
+			ChangeList(Student, path);
+			break;
+		}
+		case 3:
+		{
+			cout << endl;
+			ShowFile(path);
+			break;
+		}
+		case 4:
+		{
+			CopyInStruct(Student, path);
+			int N;
+			cout << "\nВведите номер группы: ";
+			cin >> N;
+			WriteGroup(Student, N, path);
+			break;
+		}
+		case 5:
+		{
+			cout << endl;
+			WriteBestStudents(Student, path);
+			break;
+		}
+		case 6:
+		{
+			cout << endl;
+			WriteMaleFemale(Student, path);
+			break;
+		}
+		case 7:
+		{
+			cout << endl;
+			WriteGrades(Student, path);
+			break;
+		}
+		case 8:
+		{
+			cout << endl;
+			WriteStudentsNum(Student, path);
+			break;
+		}
+		}
+	}
+
+}
+
+int CountStudents(string path)
+{
+	ifstream fin(path);
+	if (fin.is_open())
+	{
+		int count = 0;
+		string str;
+		while (!fin.eof())
+		{
+			getline(fin, str);
+			count++;
+		}
+		fin.close();
+		int n;
+		n = count / 5;
+		return n;
+	}
+	else
+		return 0;
+}
+
+void DeleteAll(string path)
+{
+	ofstream fout;
+	fout.open(path);
+	fout.close();
+}
+
+void ShowFile(string path)
+{
+	ifstream fin;
+	fin.open(path);
+
+	if (!fin.is_open())
+		cout << "Не удалось открыть файл" << endl;
+	else
+	{
+		int N;
+		N = CountStudents(path);
+		if (N == 0)
+			cout << "\nФайл пуст" << endl;
+		else
+		{
+			string str;
+			int count = 0;
+			while (!fin.eof())
+			{
+				getline(fin, str);
+				count++;
+				if (count % 5 == 0)
+					cout << str << "\n\n";
+				else
+					cout << str << endl;
+			}
+			fin.close();
+			cout << "Всего в файле в файле " << N << " студентов" << endl;
+		}
+	}
+}
+
+void CreateNewList(student* S, string path)
+{
+	bool F;
+	do 
+	{
+		cout << "ФИО: ";
+		string Name1, Name2, Name3, FullName;
+		cin >> Name1 >> Name2 >> Name3;
+		FullName = Name1 + " " + Name2 + " " + Name3;
+		S->FullName = FullName;
+		cout << "Пол: ";
+		cin >> S->sex;
+		cout << "Номер группы: ";
+		cin >> S->group;
+		cout << "Номер студента в списке: ";
+		cin >> S->num;
+		cout << "Оценки за прошлую сессию: ";
+		for (int i = 0; i < 8; i++)
+			cin >> S->grades[i];
+		cin.clear();
+
+		bool flag = true;
+		for (int i = 0; i < 8; i++)
+		{
+			if (S->grades[i] == 2)
+				flag = false;
+		}
+		if (flag)
+		{
+			ofstream fout;
+			fout.open(path, ios::app);
+
+			if (!fout.is_open())
+				cout << "Ошибка чтения файла " << endl;
+			else
+			{
+				fout << "\n";
+				fout << S->FullName << "\n";
+				fout << S->sex << "\n" << S->group << "\n" << S->num << "\n";
+				for (int i = 0; i < 8; i++)
+				{
+					if (i != 7)
+						fout << S->grades[i] << " ";
+					else
+						fout << S->grades[i];
+				}
+				cout << "Запись о студенте успешно сохранена" << endl;
+			}
+			fout.close();
+		}
+		else
+			cout << "Запись не может быть сохранена, т. к. студент должен быть отчислен" << endl;
+
+		string YesOrNot;
+		cout << "Добавить ещё одну запись? (Да/Нет) ";
+		cin >> YesOrNot;
+		if (YesOrNot == "Да")
+			F = true;
+		else
+			F = false;
+
+	} while (F);
+}
+
+void CopyInStruct(student* Student, string path)
+{
+	int size = CountStudents(path);
+
+	ifstream fin;
+	fin.open(path);
+
+	if (!fin.is_open())
+		cout << "\nОшибка!\n";
+	else
+	{
+		for (int i = 0; i < size; i++)
+		{
+			string str = " ";
+			int A, B;
+			getline(fin, str);
+			(Student + i)->FullName = str;
+
+			fin >> str;
+			(Student + i)->sex = str[0];
+
+			fin >> A;
+			(Student + i)->group = A;
+
+			fin >> B;
+			(Student + i)->num = B;
+
+			for (int j = 0; j < 8; j++)
+			{
+				int C = 0;
+				fin >> C;
+
+				(Student + i)->grades[j] = C;
+			}
+			getline(fin, str);
+		}
+	}
+	fin.close();
+}
+
+void ChangeList(student *Student, string path)
+{
+	int number;
+	int size = CountStudents(path);
+	string parameter;
+	bool yes, yes1;
+	do
+	{
+		cout << "Введите номер студента (0-" << size-1 << "): ";
+		cin >> number;
+
+		do
+		{
+			cout << "Что нужно изменить? (Имя/ Пол / Группа / Номер / Оценки) ";
+			cin >> parameter;
+			if (parameter == "Имя")
+			{
+				string NewName1, NewName2, NewName3, NewFullName;
+				cout << "Введите новое ФИО: ";
+				cin >> NewName1 >> NewName2 >> NewName3;
+				NewFullName = NewName1 + " " + NewName2 + " " + NewName3;
+				(Student + number)->FullName = NewFullName;
+			}
+			else if (parameter == "Пол")
+			{
+				char NewSex;
+				cout << "Введите новый пол: ";
+				cin >> NewSex;
+				(Student + number)->sex = NewSex;
+			}
+			else if (parameter == "Группа")
+			{
+				int NewGroup;
+				cout << "Введите новый номер группы: ";
+				cin >> NewGroup;
+				(Student + number)->group = NewGroup;
+			}
+			else if (parameter == "Номер")
+			{
+				int NewNum;
+				cout << "Введите новый номер в списке: ";
+				cin >> NewNum;
+				(Student + number)->num = NewNum;
+			}
+			else if (parameter == "Оценки")
+			{
+				int NewGrades[8];
+				cout << "Введите новые оценки (через пробел): ";
+				for (int i = 0; i < 8; i++)
+				{
+					cin >> NewGrades[i];
+					(Student + number)->grades[i] = NewGrades[i];
+				}
+			}
+			string yes_or_no;
+			cout << "Хотите изменить что-то еще? (Да/Нет) ";
+			cin >> yes_or_no;
+			if (yes_or_no == "Да")
+				yes1 = true;
+			else
+				yes1 = false;
+		} while (yes1);
+
+		string yes_or_no;
+		cout << "Хотите изменить запись о другом студенте? (Да/Нет) ";
+		cin >> yes_or_no;
+		if (yes_or_no == "Да")
+			yes = true;
+		else
+			yes = false;
+	} while (yes);
+
+	ofstream fout(path);
+
+	for (int i = 0; i < size; i++)
+	{
+		fout << (Student + i)->FullName << "\n";
+		fout << (Student + i)->sex << "\n" << (Student + i)->group << "\n" << (Student + i)->num << "\n";
+		for (int j = 0; j < 8; j++)
+		{
+			if ((j == 7) && (i == (size - 1)))
+				fout << (Student + i)->grades[j];
+			else if (j == 7 && i != (size - 1))
+				fout << (Student + i)->grades[j] << "\n";
+			else
+				fout << (Student + i)->grades[j] << " ";
+		}
+	}
+
+	fout.close();
+}
+
+void WriteGroup(student* S, int N, string path)
+{
+	int size = CountStudents(path);
+	int count = 0;
+	cout << endl;
+	for (int i = 0; i < size; i++)
+	{
+		if ((S + i)->group == N)
+		{
+			count++;
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->group << "\n";
+			cout << (S + i)->num << "\n";
+			for (int j = 0; j < 8; j++)
+				cout << (S + i)->grades[j] << " ";
+			cout << "\n\n";
+		}
+	}
+	if (count == 0)
+		cout << "Студентов из этой группы не найдено\n";
+}
+
+void WriteBestStudents(student* S, string path)
+{
+	CopyInStruct(S, path);
+	const int Size = 100;
+	int size = CountStudents(path);
+
+	float arr_grades[Size];
+	int sum_grade;
+	double curr_grade;
+	for (int i = 0; i < size; i++) {
+		sum_grade = 0;
+		for (int j = 0; j < 8; j++) {
+			sum_grade += (S + i)->grades[j];
+		}
+		curr_grade = sum_grade / 8;
+		arr_grades[i] = curr_grade;
+	}
+
+	int arr_numb[Size];
+
+	for (int i = 0; i < size; i++) {
+		arr_numb[i] = i;
+	}
+
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size - 1; j++) {
+			if (arr_grades[i] > arr_grades[j + 1]) {
+				swap(arr_grades[i], arr_grades[j + 1]);
+				swap(arr_numb[i], arr_numb[j + 1]);
+			}
+		}
+	}
+
+	for (int i = 0; i < size/6; i++)
+	{
+		cout << (S + arr_numb[i])->FullName << "\n" << (S + arr_numb[i])->sex << "\n" << (S + arr_numb[i])->group << "\n" << (S + arr_numb[i])->num << "\n";
+		for (int j = 0; j < 8; j++)
+		{
+			if ((j == 7) && (i == (size - 1)))
+				cout << (S + arr_numb[i])->grades[j];
+			else if (j == 7 && i != (size - 1))
+				cout << (S + arr_numb[i])->grades[j] << "\n\n";
+			else
+				cout << (S + arr_numb[i])->grades[j] << " ";
+		}
+	}
+}
+
+void WriteMaleFemale(student* S, string path) 
+{
+	CopyInStruct(S, path);
+	int size = CountStudents(path);
+	int man = 0, woman = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if ((S + i)->sex == 'м')
+			man += 1;
+		else if ((S + i)->sex == 'ж')
+			woman += 1;
+
+	}
+	cout << "Количество парней в списке: " << man << endl;
+	cout << "Количество девушек в списке: " << woman << endl;
+}
+
+void WriteGrades(student* S, string path)
+{
+	CopyInStruct(S, path);
+	int size = CountStudents(path);
+	const int Size = 100;
+	string arr_value[Size];
+	for (int i = 0; i < size; i++)
+	{
+		bool low = false;
+		int sum = 0;
+		for (int j = 0; j < 8; j++)
+		{
+			if ((S + i)->grades[j] <= 3)
+			{
+				low = true;
+				break;
+			}
+			else
+				sum += (S + i)->grades[j];
+		}
+		if (low)
+		{
+			arr_value[i] = "low";
+			continue;
+		}
+		if (sum == 5 * 8)
+			arr_value[i] = "high";
+		else
+			arr_value[i] = "middle";
+	}
+	cout << "Студенты, учащиеся на 5:\n\n";
+	for (int i = 0; i < size; i++)
+	{
+		if (arr_value[i] == "high")
+		{
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->group << "\n";
+			cout << (S + i)->num << "\n";
+			for (int j = 0; j < 8; j++)
+			{
+				if ((j == 7) && (i == (size - 1)))
+					cout << (S + i)->grades[j];
+				else if (j == 7 && i != (size - 1))
+					cout << (S + i)->grades[j] << "\n\n";
+				else
+					cout << (S + i)->grades[j] << " ";
+			}
+		}
+	}
+	cout << "Студенты, учащиеся на 4 и 5:\n\n";
+	for (int i = 0; i < size; i++)
+	{
+		if (arr_value[i] == "middle")
+		{
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->group << "\n";
+			cout << (S + i)->num << "\n";
+			for (int j = 0; j < 8; j++)
+			{
+				if ((j == 7) && (i == (size - 1)))
+					cout << (S + i)->grades[j];
+				else if (j == 7 && i != (size - 1))
+					cout << (S + i)->grades[j] << "\n\n";
+				else
+					cout << (S + i)->grades[j] << " ";
+			}
+		}
+	}
+	cout << "Студенты, не получающие стипендию:\n\n";
+	for (int i = 0; i < size; i++)
+	{
+		if (arr_value[i] == "low")
+		{
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->group << "\n";
+			cout << (S + i)->num << "\n";
+			for (int j = 0; j < 8; j++)
+			{
+				if ((j == 7) && (i == (size - 1)))
+					cout << (S + i)->grades[j];
+				else if (j == 7 && i != (size - 1))
+					cout << (S + i)->grades[j] << "\n\n";
+				else
+					cout << (S + i)->grades[j] << " ";
+			}
+		}
+	}
+}
+
+void WriteStudentsNum(student* S, string path)
+{
+	CopyInStruct(S, path);
+	int size = CountStudents(path);
+	int gr, num_in_gr;
+	cout << "Введите номер группы: ";
+	cin >> gr;
+	cout << "\nВведите номер студента в группе: ";
+	cin >> num_in_gr;
+	cout << endl;
+
+	for (int i = 0; i < size; i++)
+	{
+		if ((S + i)->group == gr && (S + i)->num == num_in_gr)
+		{
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->group << "\n";
+			cout << (S + i)->num << "\n";
+			for (int j = 0; j < 8; j++)
+			{
+				if ((j == 7) && (i == (size - 1)))
+					cout << (S + i)->grades[j];
+				else if (j == 7 && i != (size - 1))
+					cout << (S + i)->grades[j] << "\n\n";
+				else
+					cout << (S + i)->grades[j] << " ";
+			}
+		}
+	}
+}
