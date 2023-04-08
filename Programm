@@ -408,9 +408,11 @@ void WriteBestStudents(student* S, string path)
 	float arr_grades[SIZE_];
 	int sum_grade;
 	double curr_grade;
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) 
+        {
 		sum_grade = 0;
-		for (int j = 0; j < 8; j++) {
+		for (int j = 0; j < 8; j++) 
+                {
 			sum_grade += (S + i)->grades[j];
 		}
 		curr_grade = sum_grade / 8;
@@ -419,13 +421,17 @@ void WriteBestStudents(student* S, string path)
 
 	int arr_numb[SIZE_];
 
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) 
+        {
 		arr_numb[i] = i;
 	}
 
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size - 1; j++) {
-			if (arr_grades[i] > arr_grades[j + 1]) {
+	for (int i = 0; i < size; i++) 
+        {
+	       for (int j = 0; j < size - 1; j++) 
+               {
+			if (arr_grades[i] > arr_grades[j + 1]) 
+                        {
 				swap(arr_grades[i], arr_grades[j + 1]);
 				swap(arr_numb[i], arr_numb[j + 1]);
 			}
