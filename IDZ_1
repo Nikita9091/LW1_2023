@@ -1,0 +1,258 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+const int SIZE_ = 50;
+
+struct Volleyball
+{
+	string FullName;
+	char sex;
+	int age;
+	int WearSize;
+	bool category;
+	int course;
+};
+
+void CreateNewList(Volleyball*, string);
+void ShowFile(string);
+void WriteCategory(Volleyball*, string);
+void WriteWearSize(Volleyball* S, string path);
+int CountStudents(string);
+
+
+int main()
+{
+	setlocale(0, "");
+	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+
+	string path = "C:/Users/fomen/OneDrive/Рабочий стол/Программирование/myFileIDZ.txt";
+	struct Volleyball Student[SIZE_];
+
+	int size = CountStudents(path);
+
+	cout << "1. Вывести информацию обо всех студентах, имеющих разряд по волейболу\n2. Вывести информацию обо всех студентов мужского пола, чей размер одежды больше введённого\n3. Вывод всех данных о студентах\n"
+		<< "4. Вывод информации обо всех студентах заданной группы\n"
+		<< "6. Вывод количества студентов мужского и женского пола\n7. Вывод данных о студентах, которые не получают стипендию; учатся только на 'хор' и 'отл'; только на 'отл'\n"
+		<< "8. Вывод данных о студентах, имеющих заданный номер в списке\n";
+
+	int command = 1;
+	while (command)
+	{
+		cout << "\n\nВведите номер команды: ";
+		cin >> command;
+		switch (command)
+		{
+		case 0:
+			break;
+		case 1:
+		{
+			CreateNewList(Student, path);
+			break;
+		}
+		case 2:
+		{
+			cout << endl;
+			WriteCategory(Student, path);
+			break;
+		}
+		case 3:
+		{
+			cout << endl;
+			WriteWearSize(Student, path);
+			break;
+		}
+	}
+
+}
+
+int CountStudents(string path)
+{
+	ifstream fin(path);
+	if (fin.is_open())
+	{
+		int count = 0;
+		string str;
+		while (!fin.eof())
+		{
+			getline(fin, str);
+			count++;
+		}
+		fin.close();
+		int n;
+		n = count / 5;
+		return n;
+	}
+	else
+		return 0;
+}
+
+void ShowFile(string path)
+{
+	ifstream fin;
+	fin.open(path);
+
+	if (!fin.is_open())
+		cout << "Не удалось открыть файл" << endl;
+	else
+	{
+		int N;
+		N = CountStudents(path);
+		if (N == 0)
+			cout << "\nФайл пуст" << endl;
+		else
+		{
+			string str;
+			int count = 0;
+			while (!fin.eof())
+			{
+				getline(fin, str);
+				count++;
+				if (count % 5 == 0)
+					cout << str << "\n\n";
+				else
+					cout << str << endl;
+			}
+			fin.close();
+			cout << "Всего в файле в файле " << N << " студентов" << endl;
+		}
+	}
+}
+
+void CreateNewList(Volleyball* S, string path)
+{
+	bool F;
+	do 
+	{
+		cout << "ФИО: ";
+		string Name1, Name2, Name3, FullName;
+		cin >> Name1 >> Name2 >> Name3;
+		FullName = Name1 + " " + Name2 + " " + Name3;
+		S->FullName = FullName;
+		cout << "Пол: ";
+		cin >> S->sex;
+		cout << "Возраст: ";
+		cin >> S->age;
+		cout << "Размер одежды: ";
+		cin >> S->WearSize;
+		cout << "Есть ли разряд? (1 - есть / 0 - нет) ";
+		cin >> S->category;
+		cout << "Номер курса (1 - 6) ";
+		cin >> S->course;
+
+		cin.clear();
+
+		
+		ofstream fout;
+		fout.open(path, ios::app);
+
+		if (!fout.is_open())
+			cout << "Ошибка чтения файла " << endl;
+		else
+		{
+			fout << S->FullName << "\n";
+			fout << S->sex << "\n" << S->age << "\n" << S->WearSize << "\n" << S->category << "\n" << S->course << "\n";
+			cout << "Запись о студенте успешно сохранена" << endl;
+		}
+		fout.close();
+
+		string YesOrNot;
+		cout << "Добавить ещё одну запись? (Да/Нет) ";
+		cin >> YesOrNot;
+		if (YesOrNot == "Да")
+			F = true;
+		else
+			F = false;
+
+	} while (F);
+}
+
+void CopyInStruct(Volleyball* S, string path)
+{
+	int size = CountStudents(path);
+
+	ifstream fin;
+	fin.open(path);
+
+	if (!fin.is_open())
+		cout << "\nОшибка!\n";
+	else
+	{
+		for (int i = 0; i < size; i++)
+		{
+			string str = " ";
+			int A;
+			getline(fin, str);
+			(S + i)->FullName = str;
+
+			fin >> str;
+			(S + i)->sex = str[0];
+			fin >> A;
+			(S + i)->age = A;
+			fin >> A;
+			(S + i)->WearSize = A;
+			fin >> A;
+			(S + i)->category = A;
+			fin >> A;
+			(S + i)->course = A;
+
+			getline(fin, str);
+
+		}
+	}
+	fin.close();
+}
+
+void WriteCategory(Volleyball* S, string path)
+{
+	CopyInStruct(S, path);
+	int size = CountStudents(path);
+	int count = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if ((S + i)->category == 1)
+		{
+			count++;
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->age << "\n";
+			cout << (S + i)->WearSize << "\n";
+			cout << (S + i)->category << "\n";
+			cout << (S + i)->course << "\n";
+			cout << "\n";
+		}
+	}
+	if (count == 0)
+		cout << "Студентов с разрядом не найдено\n";
+}
+
+void WriteWearSize(Volleyball* S, string path)
+{
+	CopyInStruct(S, path);
+	int Wear_Size;
+	int size = CountStudents(path);
+	cout << "\nВведите размер одежды: ";
+	cin >> Wear_Size;
+	cout << endl;
+	int count = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if (((S + i)->WearSize < Wear_Size) && ((S+i)->sex = 'м'))
+		{
+			count++;
+			cout << (S + i)->FullName << "\n";
+			cout << (S + i)->sex << "\n";
+			cout << (S + i)->age << "\n";
+			cout << (S + i)->WearSize << "\n";
+			cout << (S + i)->category << "\n";
+			cout << (S + i)->course << "\n";
+			cout << "\n";
+		}
+	}
+	if (count == 0)
+		cout << "Студентов с разрядом не найдено\n";
+
+}
