@@ -4,7 +4,7 @@
 #include <Windows.h>
 using namespace std;
 
-//const int SIZE = 50;
+const int SIZE_ = 50;
 
 struct student
 {
@@ -36,10 +36,10 @@ int main()
 	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
 	SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
 
-	const int SIZE = 50;
+	//const int SIZE = 50;
 
 	string path = "C:/Users/fomen/OneDrive/Рабочий стол/Программирование/myFile.txt";
-	struct student Student[SIZE];
+	struct student Student[SIZE_];
 	struct student S;
 
 	int size = CountStudents(path);
@@ -60,7 +60,7 @@ int main()
 			break;
 		case 1:
 		{
-			if (size >= SIZE)
+			if (size >= SIZE_)
 				cout << "Файл полностью заполнен!" << endl;
 			else
 			{
@@ -403,10 +403,9 @@ void WriteGroup(student* S, int N, string path)
 void WriteBestStudents(student* S, string path)
 {
 	CopyInStruct(S, path);
-	const int Size = 100;
 	int size = CountStudents(path);
 
-	float arr_grades[Size];
+	float arr_grades[SIZE_];
 	int sum_grade;
 	double curr_grade;
 	for (int i = 0; i < size; i++) {
@@ -418,7 +417,7 @@ void WriteBestStudents(student* S, string path)
 		arr_grades[i] = curr_grade;
 	}
 
-	int arr_numb[Size];
+	int arr_numb[SIZE_];
 
 	for (int i = 0; i < size; i++) {
 		arr_numb[i] = i;
@@ -469,8 +468,7 @@ void WriteGrades(student* S, string path)
 {
 	CopyInStruct(S, path);
 	int size = CountStudents(path);
-	const int Size = 100;
-	string arr_value[Size];
+	string arr_value[SIZE_];
 	for (int i = 0; i < size; i++)
 	{
 		bool low = false;
