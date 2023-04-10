@@ -38,7 +38,7 @@ int main()
 
 	//const int SIZE = 50;
 
-	string path = "C:/Users/fomen/OneDrive/Рабочий стол/Программирование/myFile.txt";
+	string path = "myFile.txt";
 	struct student Student[SIZE_];
 	struct student S;
 
